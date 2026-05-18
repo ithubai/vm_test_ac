@@ -6,8 +6,7 @@
       "version": "16"
     }
   },
-  "postCreateCommand": "cd app && pnpm install",
-  "postStartCommand": "sudo service postgresql start && sudo -u postgres psql -c \"CREATE USER offerte WITH PASSWORD 'offerte_secret';\" 2>/dev/null || true && sudo -u postgres psql -c \"CREATE DATABASE offerte_db OWNER offerte;\" 2>/dev/null || true && cd app && ([ -f .env ] || cp .env.example .env) && pnpm exec prisma migrate deploy 2>/dev/null || true && pnpm exec prisma db seed 2>/dev/null || true",
+  "postStartCommand": "bash /workspaces/vm_test_ac/.devcontainer/setup.sh",
   "forwardPorts": [3000],
   "portsAttributes": {
     "3000": {
@@ -25,8 +24,8 @@
     }
   },
   "containerEnv": {
-    "DATABASE_URL": "postgresql://postgres:postgres@localhost:5432/offerte_db",
-    "NEXTAUTH_SECRET": "dev_secret_codespaces_change_in_production",
+    "DATABASE_URL": "postgresql://offerte:offerte_secret@localhost:5432/offerte_db",
+    "NEXTAUTH_SECRET": "dev_secret_change_in_production",
     "NEXTAUTH_URL": "http://localhost:3000"
   }
 }
