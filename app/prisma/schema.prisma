@@ -6,64 +6,96 @@ datasource db {
   provider = "postgresql"
 }
 
-model Cliente {
-  id        String   @id @default(cuid())
-  nome      String
-  email     String   @unique
-  telefono  String?
-  azienda   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  offerte   Offerta[]
+model Utente {
+  id            String   @id @default(cuid())
+  nome          String
+  email         String   @unique
+  passwordHash  String
+  ruolo         Ruolo    @default(COMMERCIALE)
+  attivo        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  offerte       Offerta[]
 }
 
-model Prodotto {
+enum Ruolo {
+  ADMIN
+  COMMERCIALE
+}
+
+model Articolo {
+  id          String  @id @default(cuid())
+  codice      String  @unique
+  descrizione String
+  tipologia   String
+  categoria   String
+  finitura    String
+  immagine    String?
+  attivo      Boolean @default(true)
+  righe       RigaOfferta[]
+  listino     Listino[]
+}
+
+model Listino {
+  id          String     @id @default(cuid())
+  articoloId  String
+  articolo    Articolo   @relation(fields: [articoloId], references: [id])
+  prezzoBase  Float
+  tipo        TipoPrezzo @default(VENDITA)
+  validoDal   DateTime   @default(now())
+  attivo      Boolean    @default(true)
+}
+
+enum TipoPrezzo {
+  COSTO
+  VENDITA
+}
+
+model MarkupConfig {
+  id        String  @id @default(cuid())
+  categoria String?
+  markup    Float
+  attivo    Boolean @default(true)
+}
+
+model PropostaTemplate {
   id          String   @id @default(cuid())
-  codice      String   @unique
   nome        String
   descrizione String?
-  prezzo      Decimal  @db.Decimal(10, 2)
-  unita       String   @default("pz")
-  attivo      Boolean  @default(true)
+  righe       Json
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  righe       RigaOfferta[]
+  attivo      Boolean  @default(true)
 }
 
 model Offerta {
-  id          String        @id @default(cuid())
-  numero      String        @unique
-  titolo      String
-  stato       StatoOfferta  @default(BOZZA)
-  clienteId   String
-  cliente     Cliente       @relation(fields: [clienteId], references: [id])
+  id          String       @id @default(cuid())
+  numero      String       @unique
+  cliente     String
+  dataOfferta DateTime     @default(now())
+  noteInterne String?
+  stato       StatoOfferta @default(BOZZA)
+  utenteId    String
+  utente      Utente       @relation(fields: [utenteId], references: [id])
   righe       RigaOfferta[]
-  note        String?
-  validaFino  DateTime?
-  totale      Decimal       @default(0) @db.Decimal(10, 2)
-  sconto      Decimal       @default(0) @db.Decimal(5, 2)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-}
-
-model RigaOfferta {
-  id          String   @id @default(cuid())
-  offertaId   String
-  offerta     Offerta  @relation(fields: [offertaId], references: [id], onDelete: Cascade)
-  prodottoId  String
-  prodotto    Prodotto @relation(fields: [prodottoId], references: [id])
-  quantita    Decimal  @db.Decimal(10, 3)
-  prezzoUnit  Decimal  @db.Decimal(10, 2)
-  sconto      Decimal  @default(0) @db.Decimal(5, 2)
-  totale      Decimal  @db.Decimal(10, 2)
-  note        String?
-  ordine      Int      @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 enum StatoOfferta {
   BOZZA
   INVIATA
-  ACCETTATA
-  RIFIUTATA
-  SCADUTA
+  APPROVATA
+  ANNULLATA
+}
+
+model RigaOfferta {
+  id             String    @id @default(cuid())
+  offertaId      String
+  offerta        Offerta   @relation(fields: [offertaId], references: [id], onDelete: Cascade)
+  articoloId     String?
+  articolo       Articolo? @relation(fields: [articoloId], references: [id])
+  ordine         Int
+  quantita       Float     @default(1)
+  prezzoUnitario Float     @default(0)
+  extraMarkup    Float     @default(0)
+  note           String?
 }

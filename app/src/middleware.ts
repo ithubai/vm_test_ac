@@ -1,0 +1,22 @@
+import { auth } from "@/lib/auth"
+import { NextResponse } from "next/server"
+
+export default auth((req) => {
+  const { pathname } = req.nextUrl
+  const isLoggedIn = !!req.auth
+  const ruolo = req.auth?.user?.ruolo
+
+  if (!isLoggedIn) {
+    return NextResponse.redirect(new URL("/login", req.url))
+  }
+
+  if (pathname.startsWith("/admin") && ruolo !== "ADMIN") {
+    return NextResponse.redirect(new URL("/app/offerte", req.url))
+  }
+
+  return NextResponse.next()
+})
+
+export const config = {
+  matcher: ["/app/:path*", "/admin/:path*"],
+}
