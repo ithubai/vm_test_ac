@@ -1,0 +1,30 @@
+{
+  "name": "Configuratore Offerte",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+  "features": {
+    "ghcr.io/devcontainers/features/postgresql:1": {
+      "version": "16"
+    }
+  },
+  "postCreateCommand": "cd app && pnpm install",
+  "postStartCommand": "sudo service postgresql start && cd app && pnpm exec prisma migrate deploy 2>/dev/null || true",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "App Next.js",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "prisma.prisma",
+        "bradlc.vscode-tailwindcss",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  },
+  "containerEnv": {
+    "DATABASE_URL": "postgresql://postgres:postgres@localhost:5432/offerte_db"
+  }
+}
