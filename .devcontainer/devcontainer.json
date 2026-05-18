@@ -25,6 +25,8 @@
     }
   },
   "containerEnv": {
-    "DATABASE_URL": "postgresql://postgres:postgres@localhost:5432/offerte_db"
+    "DATABASE_URL": "postgresql://postgres:postgres@localhost:5432/offerte_db",
+    "NEXTAUTH_SECRET": "dev_secret_codespaces_change_in_production",
+    "NEXTAUTH_URL": "http://localhost:3000"
   }
 }
