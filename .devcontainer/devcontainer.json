@@ -7,7 +7,7 @@
     }
   },
   "postCreateCommand": "cd app && pnpm install",
-  "postStartCommand": "sudo service postgresql start && cd app && ([ -f .env ] || cp .env.example .env) && pnpm exec prisma migrate deploy 2>/dev/null || true",
+  "postStartCommand": "sudo service postgresql start && cd app && ([ -f .env ] || cp .env.example .env) && pnpm exec prisma migrate deploy 2>/dev/null || true && pnpm exec prisma db seed 2>/dev/null || true",
   "forwardPorts": [3000],
   "portsAttributes": {
     "3000": {
